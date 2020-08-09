@@ -14,10 +14,10 @@ import Slide from "@material-ui/core/Slide";
 import CoinsIcon from "../../components/Icons/Coins";
 import ReceiptIcon from "@material-ui/icons/Receipt";
 import OpacityIcon from "@material-ui/icons/Opacity";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { UniswapLiquidityProviderHistory } from "../Uniswap"
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => createStyles({
   tabRoot: {
     minHeight: "inherit",
   },
@@ -26,17 +26,23 @@ const useStyles = makeStyles({
     flexDirection: "row",
     alignItems: "center",
   },
-});
+  padding: {
+    [theme.breakpoints.up("md")]: {
+      paddingLeft: 24,
+      paddingRight: 24,
+    },
+  }
+}));
 
 export const Home = () => {
   const classes = useStyles();
   const [tab, setTab] = useState(0);
   return (
     <MainLayout>
-      <Box px={3} pt={1} pb={5}>
+      <Box pt={1} pb={5}>
         <Grid container>
           <Grid item xs={12}>
-            <Box mb={1}>
+            <Box mb={1} className={classes.padding}>
               <Tabs
                 value={tab}
                 onChange={(ev, value) => setTab(value)}
@@ -64,23 +70,25 @@ export const Home = () => {
             </Box>
             <TabPanel activeTab={tab} index={0}>
               {tab === 0 ? (
-                // <Card style={{ width: "100%" }}>
+                <Box className={classes.padding}>
                   <TokensTable />
-                // </Card>
+                </Box>
               ) : null}
             </TabPanel>
             <TabPanel activeTab={tab} index={1}>
               {tab === 1 ? (
-                // <Card style={{ width: "100%" }}>
+                <Box className={classes.padding}>
                   <TransactionsTable />
-                // </Card>
+                </Box>
               ) : null}
             </TabPanel>
             <TabPanel activeTab={tab} index={2}>
               {tab === 2 ? (
-                <UniswapApolloProvider>
-                  <UniswapLiquidityProviderHistory />
-                </UniswapApolloProvider>
+                <Box px={3}>
+                  <UniswapApolloProvider>
+                    <UniswapLiquidityProviderHistory />
+                  </UniswapApolloProvider>
+                </Box>
               ) : null}
             </TabPanel>
           </Grid>

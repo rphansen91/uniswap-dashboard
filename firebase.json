@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "uniswap",
     "public": "build",
     "ignore": [
       "firebase.json",

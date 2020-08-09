@@ -15,6 +15,7 @@ import { lighten, useTheme } from '@material-ui/core/styles';
 import CardHeader from "@material-ui/core/CardHeader";
 import Typography from "@material-ui/core/Typography";
 import { AddressAvatar, TokenAvatar } from "../../components/Avatar";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import "chart.js";
 
 // Impermanent Loss Chart
@@ -62,6 +63,7 @@ export const UniswapLiquidityProviderHistory = () => {
   });
   return (
     <>
+      {loading ? <LinearProgress /> : null}
       {data?.user?.liquidityPositions?.map((position: any) => {
         const storedPositions = storedLiquidityPositions?.[data?.user?.id ?? '']?.[position?.pair?.id ?? ''] ?? []
         const positions = ([] as any[]).concat(position?.historicalSnapshots ?? []).concat(storedPositions).sort(sortBy('timestamp', -1))
@@ -157,14 +159,15 @@ const UniswapLiquidityPairHistory = ({ userId, pair, positions }: { userId: stri
             const totalOwnershipUsd1Prev = totalReserveUsd1Prev * prevOwnership
 
             tableRoot.innerHTML = [
-              p(`Price ${pair?.token0?.symbol}: ${values.token0PriceUSD} ${diff(values.token0PriceUSD, prevValues.token0PriceUSD)}`),
-              p(`Price ${pair?.token1?.symbol}: ${values.token1PriceUSD} ${diff(values.token1PriceUSD, prevValues.token1PriceUSD)}`),
-              p(`Reserve ${pair?.token0?.symbol}: ${values.reserve0} ${diff(values.reserve0, prevValues.reserve0)}`),
-              p(`Reserve ${pair?.token1?.symbol}: ${values.reserve1} ${diff(values.reserve1, prevValues.reserve1)}`),
-              p(`LP ${pair?.token0?.symbol}: ${values.reserve0 * ownership} ${diff(values.reserve0 * ownership, prevValues.reserve0 * prevOwnership)}`),
-              p(`LP ${pair?.token1?.symbol}: ${values.reserve1 * ownership} ${diff(values.reserve1 * ownership, prevValues.reserve1 * prevOwnership)}`),
-              p(`LP ${pair?.token0?.symbol} USD: ${totalOwnershipUsd0} ${diff(totalOwnershipUsd0, totalOwnershipUsd0Prev)}`),
-              p(`LP ${pair?.token1?.symbol} USD: ${totalOwnershipUsd1} ${diff(totalOwnershipUsd1, totalOwnershipUsd1Prev)}`),
+              p(b(fromTimestamp(snapshot).toDateString())),
+              p(`Price ${pair?.token0?.symbol}: ${format(values.token0PriceUSD, 6)} ${diff(values.token0PriceUSD, prevValues.token0PriceUSD)}`),
+              p(`Price ${pair?.token1?.symbol}: ${format(values.token1PriceUSD, 6)} ${diff(values.token1PriceUSD, prevValues.token1PriceUSD)}`),
+              p(`Reserve ${pair?.token0?.symbol}: ${format(values.reserve0)} ${diff(values.reserve0, prevValues.reserve0)}`),
+              p(`Reserve ${pair?.token1?.symbol}: ${format(values.reserve1)} ${diff(values.reserve1, prevValues.reserve1)}`),
+              p(`LP ${pair?.token0?.symbol}: ${format(values.reserve0 * ownership)} ${diff(values.reserve0 * ownership, prevValues.reserve0 * prevOwnership)}`),
+              p(`LP ${pair?.token1?.symbol}: ${format(values.reserve1 * ownership)} ${diff(values.reserve1 * ownership, prevValues.reserve1 * prevOwnership)}`),
+              p(`LP ${pair?.token0?.symbol} USD: ${format(totalOwnershipUsd0)} ${diff(totalOwnershipUsd0, totalOwnershipUsd0Prev)}`),
+              p(`LP ${pair?.token1?.symbol} USD: ${format(totalOwnershipUsd1)} ${diff(totalOwnershipUsd1, totalOwnershipUsd1Prev)}`),
             ].join('\n') 
             const position = (this as any)._chart.canvas.getBoundingClientRect();
             const size = tableRoot.getBoundingClientRect();
@@ -247,17 +250,17 @@ const stacked = {
     yAxes: [{
       stacked: true,
       ticks: {
-        display: !isMobileDevice()
+        display: false // !isMobileDevice()
       }
     }],
     xAxes: [{
       ticks: {
-        display: !isMobileDevice()
+        display: false // !isMobileDevice()
       }
     }]
   },
   onResize: function(chart: any, size: any) {
-    const showTicks = (size.height < 200) ? false : true;
+    const showTicks = false  // (size.height <= 400) ? false : true;
     chart.options = {
       scales: {
         yAxes: [{
@@ -327,13 +330,14 @@ const format = (n: number, d = 4) => (n ?? 0).toLocaleString(undefined, {
 })
 const normalize = (v: number, min: number, max: number) => (v - min) / (max - min)
 const p = (str: string) => `<p>${str}</p>`
+const b = (str: string) => `<b>${str}</b>`
 
 function diff (curr: number, prev: number) {
   if (typeof curr !== 'number') return ''
   if (typeof prev !== 'number') return ''
   if (!prev) return ''
   const value = (curr - prev) / prev * 100
-  return `<span style="color: ${value >= 0  ? 'green' : 'red'}">${format(value, 2)}%</span>`
+  return `<span style="color: ${value >= 0  ? 'green' : 'red'}"><b>${format(value, 2)}%</b></span>`
 }
 
 var getOrCreateTooltip = function() {
