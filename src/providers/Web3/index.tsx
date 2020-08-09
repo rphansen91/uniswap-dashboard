@@ -4,16 +4,9 @@ import { resource } from "../../utils/resource"
 import { useEffect } from "react";
 
 export let web3: Web3;
-let web3Promise: Promise<Web3>;
 
 const NON_ETH_BROWSER =
   "Non-Ethereum browser detected. You should consider trying MetaMask!";
-
-export const ethEnabled = () => {
-  if ((window as any).ethereum) return true;
-  if ((window as any).web3) return true;
-  return false;
-};
 
 export const enableEthereum = async () => {
   if ((window as any).ethereum) {
@@ -26,38 +19,6 @@ export const enableEthereum = async () => {
   }
   throw new Error(NON_ETH_BROWSER);
 };
-
-export function useWeb3() {
-  if (web3) return web3;
-  if (web3Promise) throw web3Promise;
-  if ((window as any).ethereum) {
-    web3 = new Web3((window as any).ethereum);
-    web3Promise = (window as any).ethereum.enable();
-    throw web3Promise;
-  }
-  if ((window as any).web3) {
-    web3 = new Web3((window as any).web3.currentProvider);
-    return web3;
-  }
-  throw new Error(NON_ETH_BROWSER);
-}
-
-const cache: { [key: string]: any } = {};
-const error: { [key: string]: any } = {};
-const loadable: { [key: string]: Promise<any> } = {};
-export function useLoadable<V>(promise: Promise<V>, key: string) {
-  if (cache[key]) return cache[key];
-  if (error[key]) throw error[key];
-  if (loadable[key]) throw loadable[key];
-  loadable[key] = promise
-    .then((v) => {
-      cache[key] = v;
-    })
-    .catch((e) => {
-      error[key] = e;
-    });
-  throw loadable[key];
-}
 
 export const networkVersion = (window as any).ethereum?.networkVersion ?? "";
 export const selectedAddress = (window as any).ethereum?.selectedAddress ?? "";
@@ -155,27 +116,33 @@ export const useWeb3AddressTransactions = () => {
   return addressTransactions
 }
 
-const ethereum = (window as any).ethereum;
-if (ethereum) {
-  web3 = new Web3((window as any).ethereum);
-  ethereum.on("connect", (connectInfo: any) =>
-    console.log("Eth connection", connectInfo)
-  );
-  ethereum.on("disconnect", (error: any) =>
-    console.log("Eth disconnect", error)
-  );
-  ethereum.on("accountsChanged", (addresses: any) =>
-    console.log("Eth accountsChanged", addresses)
-  );
-  ethereum.on("chainChanged", (accounts: any) =>
-    console.log("Eth chainChanged", accounts)
-  );
-  ethereum.on("accountsChanged", (addresses: any) => {
-    dispatch(addressesHawk, addresses)
-  });
-  ethereum.on("chainChanged", (chainId: any) => dispatch(chainHawk, chainId));
-} else if ((window as any).web3) {
-  web3 = new Web3((window as any).web3.currentProvider);
+try {
+  const ethereum = (window as any).ethereum;
+  if (ethereum) {
+    web3 = new Web3((window as any).ethereum);
+    if (ethereum.on) {
+      ethereum.on("connect", (connectInfo: any) =>
+        console.log("Eth connection", connectInfo)
+      );
+      ethereum.on("disconnect", (error: any) =>
+        console.log("Eth disconnect", error)
+      );
+      ethereum.on("accountsChanged", (addresses: any) =>
+        console.log("Eth accountsChanged", addresses)
+      );
+      ethereum.on("chainChanged", (accounts: any) =>
+        console.log("Eth chainChanged", accounts)
+      );
+      ethereum.on("accountsChanged", (addresses: any) => {
+        dispatch(addressesHawk, addresses)
+      });
+      ethereum.on("chainChanged", (chainId: any) => dispatch(chainHawk, chainId));
+    }
+  } else if ((window as any).web3) {
+    web3 = new Web3((window as any).web3.currentProvider);
+  }
+} catch (err) {
+  alert(err.message)
 }
 
 export function getNetworkColor(chain: string) {

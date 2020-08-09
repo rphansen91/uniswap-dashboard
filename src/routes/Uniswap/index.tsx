@@ -13,8 +13,8 @@ import CardContent from "@material-ui/core/CardContent";
 import Divider from "@material-ui/core/Divider";
 import { lighten, useTheme } from '@material-ui/core/styles';
 import CardHeader from "@material-ui/core/CardHeader";
-import Typography from "@material-ui/core/Typography";
 import { AddressAvatar, TokenAvatar } from "../../components/Avatar";
+import Typography from "@material-ui/core/Typography";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import "chart.js";
 
@@ -27,7 +27,7 @@ export const Uniswap = () => {
   return (
     <MainLayout>
       <UniswapApolloProvider>
-        <Box px={3} pt={1} pb={5}>
+        <Box px={3} pb={5}>
           <Grid container>
             <Grid item xs={12}>
               <UniswapLiquidityProviderHistory />
@@ -64,18 +64,20 @@ export const UniswapLiquidityProviderHistory = () => {
   return (
     <>
       {loading ? <LinearProgress /> : null}
-      {data?.user?.liquidityPositions?.map((position: any) => {
-        const storedPositions = storedLiquidityPositions?.[data?.user?.id ?? '']?.[position?.pair?.id ?? ''] ?? []
-        const positions = ([] as any[]).concat(position?.historicalSnapshots ?? []).concat(storedPositions).sort(sortBy('timestamp', -1))
-        return (
-          <UniswapLiquidityPairHistory
-            userId={data?.user?.id}
-            pair={position?.pair}
-            key={position?.pair?.id}
-            positions={positions}
-          />
-        );
-      })}
+      <Box pt={4}>
+        {data?.user?.liquidityPositions?.map((position: any) => {
+          const storedPositions = storedLiquidityPositions?.[data?.user?.id ?? '']?.[position?.pair?.id ?? ''] ?? []
+          const positions = ([] as any[]).concat(position?.historicalSnapshots ?? []).concat(storedPositions).sort(sortBy('timestamp', -1))
+          return (
+            <UniswapLiquidityPairHistory
+              userId={data?.user?.id}
+              pair={position?.pair}
+              key={position?.pair?.id}
+              positions={positions}
+            />
+          );
+        })}
+      </Box>
     </>
   );
 };
@@ -214,15 +216,6 @@ const UniswapLiquidityPairHistory = ({ userId, pair, positions }: { userId: stri
     </Box>
   );
 };
-
-// localStorage.setItem('storedLiquidityPositions', JSON.stringify({
-//   '0xaa92bd09701d53a0f8089a93c354c03c73114450': {
-//     '0xc5be99a02c6857f9eac67bbce58df5572498f40c': [{
-//       timestamp: 1595894266,
-//       liquidityTokenBalance: 0.000362
-//     }]
-//   }
-// }))
 
 const storedLiquidityPositions: {
   [address: string]: {

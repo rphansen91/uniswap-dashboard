@@ -42,7 +42,7 @@ export const Home = () => {
       <Box pt={1} pb={5}>
         <Grid container>
           <Grid item xs={12}>
-            <Box mb={1} className={classes.padding}>
+            <Box className={classes.padding}>
               <Tabs
                 value={tab}
                 onChange={(ev, value) => setTab(value)}
