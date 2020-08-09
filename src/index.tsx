@@ -1,14 +1,40 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import MuiPickersUtilsProvider from "@material-ui/pickers/MuiPickersUtilsProvider";
+import MomentUtils from "@date-io/moment";
+import { ThemeProvider } from "./themes";
+import App from "./App";
+import * as serviceWorker from "./serviceWorker";
+import './providers/Web3'
+import "./index.css";
+import { estimateBlocksTilNextMasternodeRewards, getBalances, mapValues } from "./providers/Energi/api";
+
+const address = "0x6ca67362d28eeb8d1d845d26daad1db5a598d82a";
+
+// estimateBlocksTilNextMasternodeRewards(address)
+// .then(values => mapValues(values, (estimate) => ({
+//   ...estimate,
+//   estimatedTime: estimate.estimatedTime.toLocaleString(),
+//   estimatedTimeUntil: estimate.estimatedTime.fromNow(),
+// })))
+// .then((estimates) => console.table(estimates))
+
+// getBalances(address).then(balances => console.table(balances))
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider>
+      <MuiPickersUtilsProvider utils={MomentUtils}>
+        <CssBaseline />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </MuiPickersUtilsProvider>
+    </ThemeProvider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change
