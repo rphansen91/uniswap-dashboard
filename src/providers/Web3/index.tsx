@@ -1,7 +1,7 @@
 import Web3 from "web3";
-import { hawk, hawkeye, useHawkState, dispatch } from "react-hawk";
+import { hawk, hawkeye, useHawkState, dispatch, useHawkSetState } from "react-hawk";
 import { resource } from "../../utils/resource"
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 
 export let web3: Web3;
 
@@ -20,8 +20,20 @@ export const enableEthereum = async () => {
   throw new Error(NON_ETH_BROWSER);
 };
 
+const STORED_ADDRESS = 'STORED_ADDRESS'
 export const networkVersion = (window as any).ethereum?.networkVersion ?? "";
-export const selectedAddress = (window as any).ethereum?.selectedAddress ?? "";
+export const selectedAddress = getSelectedAddress()
+
+function getSelectedAddress () {
+  try {
+    const stored = localStorage.getItem(STORED_ADDRESS)
+    if (stored) return stored
+    return (window as any).ethereum?.selectedAddress ?? "";
+  } catch (e) {
+    console.log('getSelectedAddress Error', e)
+    return (window as any).ethereum?.selectedAddress ?? "";
+  }
+}
 
 const chainHawk = hawk({
   default: networkVersion,
@@ -89,6 +101,20 @@ export const useWeb3Chain = () => useHawkState(chainHawk);
 export const useWeb3Network = () => useHawkState(networkHawk);
 export const useWeb3NetworkColor = () => useHawkState(networkColorHawk);
 export const useWeb3Addresses = () => useHawkState(addressesHawk);
+export const useWeb3ResetStoredAddress = () => {
+  const setState = useHawkSetState(addressesHawk)
+  return useCallback((address) => {
+    localStorage.setItem(STORED_ADDRESS, '')
+    setState([address])
+  }, [setState])
+}
+export const useWeb3SetStoredAddress = () => {
+  const setState = useHawkSetState(addressesHawk)
+  return useCallback((address) => {
+    localStorage.setItem(STORED_ADDRESS, address)
+    setState([address])
+  }, [setState])
+}
 export const useWeb3AddressInfo = () => {
   const [address] = useWeb3Addresses()
   const addressInfo = useHawkState(addressInfoHawk)

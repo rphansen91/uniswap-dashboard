@@ -8,7 +8,7 @@ import Avatar from "@material-ui/core/Avatar";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import { AddressAvatar, TokenAvatar } from "../Avatar";
-import Divider from "@material-ui/core/Divider";
+import Paper from "@material-ui/core/Paper";
 import {
   loadUniswapPairInfo,
   IUniswapInfo,
@@ -26,6 +26,7 @@ import {
 export const TokensTable = () => {
   const { data, loading, error } = useWeb3AddressInfo();
   return (
+    <Paper>
     <Box maxWidth="100%" overflow="auto">
     <Table>
       <TableHead>
@@ -56,6 +57,7 @@ export const TokensTable = () => {
       </TableBody>
     </Table>
     </Box>
+    </Paper>
   );
 };
 
@@ -98,14 +100,14 @@ const TokenRow = ({ token }: { token: IToken }) => {
           pairInfo ? (
             <Box display="flex" flexDirection="column" alignItems="flex-end" justifyContent="flex-end">
               <Box mb={1} display="flex" alignItems="center" justifyContent="flex-end">
-                <Typography>{(pairInfo.balance / pairInfo.totalSupply * pairInfo.reserve0).toLocaleString(undefined, {
+                <Typography style={{ marginRight: 4 }}>{(pairInfo.balance / pairInfo.totalSupply * pairInfo.reserve0).toLocaleString(undefined, {
                   maximumFractionDigits: 4,
                   minimumFractionDigits: 4
                 })}</Typography>
                 <TokenAvatar address={pairInfo.token0} />
               </Box>
               <Box display="flex" alignItems="center" justifyContent="flex-end">
-                <Typography>{(pairInfo.balance / pairInfo.totalSupply * pairInfo.reserve1).toLocaleString(undefined, {
+                <Typography style={{ marginRight: 4 }}>{(pairInfo.balance / pairInfo.totalSupply * pairInfo.reserve1).toLocaleString(undefined, {
                   maximumFractionDigits: 4,
                   minimumFractionDigits: 4
                 })}</Typography>

@@ -17,6 +17,8 @@ query liquidityPositionHistory($address: String) {
           name
           symbol
         }
+        reserve0
+        reserve1
         totalSupply
       }
       poolOwnership

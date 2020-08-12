@@ -10,13 +10,14 @@ import Avatar from "@material-ui/core/Avatar";
 import Box from "@material-ui/core/Box";
 import { AddressAvatar } from "../Avatar";
 import Tooltip from "@material-ui/core/Tooltip";
-import Divider from "@material-ui/core/Divider";
+import Paper from "@material-ui/core/Paper";
 import React from "react";
 import { useWeb3AddressTransactions, ITransaction } from "../../providers/Web3";
 
 export const TransactionsTable = () => {
   const { data, loading, error } = useWeb3AddressTransactions();
   return (
+    <Paper>
     <Table>
       <TableHead>
         <TableRow>
@@ -42,6 +43,7 @@ export const TransactionsTable = () => {
         ))}
       </TableBody>
     </Table>
+    </Paper>
   );
 };
 

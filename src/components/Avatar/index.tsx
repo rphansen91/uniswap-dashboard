@@ -21,7 +21,7 @@ export const TokenAvatar = ({ address }: { address: string }) => {
   if (!address) return null
   return (
     <Avatar
-      style={{ height: 24, width: 24, marginLeft: 4 }}
+      style={{ height: 24, width: 24 }}
       src={`${
         process.env.PUBLIC_URL
       }/assets/tokens/${address.toLowerCase()}.png`}

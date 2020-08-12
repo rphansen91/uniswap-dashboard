@@ -70,14 +70,14 @@ export const Home = () => {
             </Box>
             <TabPanel activeTab={tab} index={0}>
               {tab === 0 ? (
-                <Box className={classes.padding}>
+                <Box className={classes.padding} pt={3}>
                   <TokensTable />
                 </Box>
               ) : null}
             </TabPanel>
             <TabPanel activeTab={tab} index={1}>
               {tab === 1 ? (
-                <Box className={classes.padding}>
+                <Box className={classes.padding} pt={3}>
                   <TransactionsTable />
                 </Box>
               ) : null}
