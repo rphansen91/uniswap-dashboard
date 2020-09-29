@@ -41,7 +41,7 @@ export async function loadUniswapPairInfo(
   };
 }
 
-export const isUniswapSymbol = (symbol: string) => symbol.startsWith("UNI-V2");
+export const isUniswapSymbol = (symbol: string) => symbol && symbol.startsWith("UNI-V2");
 
 
 export type BN = ReturnType<typeof web3.utils.toBN>
