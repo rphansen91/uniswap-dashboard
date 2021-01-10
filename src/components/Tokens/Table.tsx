@@ -122,3 +122,5 @@ const TokenRow = ({ token }: { token: IToken }) => {
     </TableRow>
   );
 };
+
+export default TokensTable

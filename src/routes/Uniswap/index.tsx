@@ -66,17 +66,21 @@ export const UniswapLiquidityProviderHistory = () => {
     variables,
     skip: !address,
   });
+  const liquidityPositions = useMemo(
+    () => groupBy(data?.liquidityPositionSnapshots, (v: any) => v?.pair?.id),
+    [data?.liquidityPositionSnapshots]
+  );
   return (
     <>
       {loading ? <LinearProgress /> : null}
-      <Box pt={4}>
+      <Box px={2} pt={2} pb={5}>
         {data?.user?.liquidityPositions?.map((position: any) => {
           const storedPositions =
             storedLiquidityPositions?.[data?.user?.id ?? ""]?.[
               position?.pair?.id ?? ""
             ] ?? [];
           const positions = ([] as any[])
-            .concat(position?.historicalSnapshots ?? [])
+            .concat(liquidityPositions[position?.pair?.id ?? ""] ?? [])
             .concat(storedPositions)
             .sort(sortBy("timestamp", -1));
           return (
@@ -109,7 +113,14 @@ const UniswapLiquidityPairHistory = ({
     skip: !pair?.id,
   });
 
-  const { data, options, token0Balance, token1Balance, token0BalancePrev, token1BalancePrev } = useMemo(() => {
+  const {
+    data,
+    options,
+    token0Balance,
+    token1Balance,
+    token0BalancePrev,
+    token1BalancePrev,
+  } = useMemo(() => {
     const primary = theme.palette.primary.main;
     const primaryDark = lighten(theme.palette.primary.main, 0.2);
     const secondary = theme.palette.secondary.main;
@@ -127,8 +138,8 @@ const UniswapLiquidityPairHistory = ({
     const positionsByTimestamp = keyBy(enumeratePositions, "timestamp");
     const snapshot = sorted?.[sorted?.length - 1];
     const prevSnapshot = sorted?.[sorted?.length - 2];
-    const position = positionsByTimestamp?.[snapshot?.timestamp]
-    const positionPrev = positionsByTimestamp?.[prevSnapshot?.timestamp]
+    const position = positionsByTimestamp?.[snapshot?.timestamp];
+    const positionPrev = positionsByTimestamp?.[prevSnapshot?.timestamp];
     const ownership = computeOwnership(snapshot, position);
     const ownershipPrev = computeOwnership(prevSnapshot, positionPrev);
     const token0Balance = Number(snapshot?.reserve0) * ownership;
@@ -301,7 +312,14 @@ const UniswapLiquidityPairHistory = ({
         },
       },
     };
-    return { data, options, token0Balance, token1Balance, token0BalancePrev, token1BalancePrev };
+    return {
+      data,
+      options,
+      token0Balance,
+      token1Balance,
+      token0BalancePrev,
+      token1BalancePrev,
+    };
   }, [theme, positions, query.data]);
   return (
     <Box mb={4}>
@@ -357,13 +375,23 @@ const UniswapLiquidityPairHistory = ({
                         </Typography>
                       </Box>
                     }
-                    action={
-                      <Chip label={`1 ${pair?.token0?.symbol} = ${format(Number(pair?.reserve1 ?? 0) / Number(pair?.reserve0 ?? 1), 6)} ${pair?.token1?.symbol}`} />
-                    }
+                    // action={
+                    //   <Chip
+                    //     label={`1 ${pair?.token0?.symbol} = ${format(
+                    //       Number(pair?.reserve1 ?? 0) /
+                    //         Number(pair?.reserve0 ?? 1),
+                    //       6
+                    //     )} ${pair?.token1?.symbol}`}
+                    //   />
+                    // }
                   />
                   <Divider />
                   <CardContent>
-                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                    >
                       <Typography variant="h4">
                         {token0Balance ? format(token0Balance) : <>&nbsp;</>}
                       </Typography>
@@ -386,13 +414,23 @@ const UniswapLiquidityPairHistory = ({
                         </Typography>
                       </Box>
                     }
-                    action={
-                      <Chip label={`1 ${pair?.token1?.symbol} = ${format(Number(pair?.reserve0 ?? 0) / Number(pair?.reserve1 ?? 1), 6)} ${pair?.token0?.symbol}`} />
-                    }
+                    // action={
+                    //   <Chip
+                    //     label={`1 ${pair?.token1?.symbol} = ${format(
+                    //       Number(pair?.reserve0 ?? 0) /
+                    //         Number(pair?.reserve1 ?? 1),
+                    //       6
+                    //     )} ${pair?.token0?.symbol}`}
+                    //   />
+                    // }
                   />
                   <Divider />
                   <CardContent>
-                    <Box display="flex" alignItems="center" justifyContent="space-between">
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                    >
                       <Typography variant="h4">
                         {token1Balance ? format(token1Balance) : <>&nbsp;</>}
                       </Typography>
@@ -646,5 +684,14 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
+
+function groupBy<V>(vs: V[], fn: (v: V) => string) {
+  return (vs ?? []).reduce((acc, v) => {
+    const key = fn(v);
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(v);
+    return acc;
+  }, {} as { [key: string]: V[] });
+}
 
 export default Uniswap;

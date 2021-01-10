@@ -17,16 +17,17 @@ export const AddressAvatar = ({
   return <JazzIcon seed={seed} {...props} />;
 };
 
-export const TokenAvatar = ({ address }: { address: string }) => {
+export const TokenAvatar = ({ address, size = 24 }: { address: string; size?: number }) => {
   if (!address) return null
   return (
     <Avatar
-      style={{ height: 24, width: 24 }}
+      style={{ height: size, width: size }}
       src={`${
         process.env.PUBLIC_URL
       }/assets/tokens/${address.toLowerCase()}.png`}
     >
-      <AddressAvatar diameter={17} address={address} />
+      <AddressAvatar diameter={size - 7} address={address} />
     </Avatar>
   );
 };
+

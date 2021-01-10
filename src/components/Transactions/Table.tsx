@@ -84,3 +84,5 @@ const TransactionRow = ({ tx }: { tx: ITransaction }) => {
     </TableRow>
   );
 };
+
+export default TransactionsTable

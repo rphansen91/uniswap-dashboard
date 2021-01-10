@@ -38,6 +38,7 @@ import {
   web3,
 } from "../../providers/Web3";
 import { AddressAvatar } from "../Avatar";
+import { ConnectAccountDialog } from "../../providers/Web3/Connect"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -123,10 +124,22 @@ export function PrimarySearchAppBar({
         onClick={onClick}
       >
       </IconButton> */}
-      <HodlStreamIcon style={{ height: 24, width: 24, marginRight: 8, borderRadius: 4 }} />
-      <Typography className={classes.title} variant="h6" noWrap>
-        Uniswap Dashboard
-      </Typography>
+      {onClick ? (
+        <>
+          <HodlStreamIcon
+            style={{ height: 24, width: 24, marginRight: 8, borderRadius: 4 }}
+            onClick={onClick}
+          />
+          <Typography
+            className={classes.title}
+            variant="h6"
+            noWrap
+            onClick={onClick}
+          >
+            Uniswap Dashboard
+          </Typography>
+        </>
+      ) : null}
       {/* <div className={classes.search}>
         <div className={classes.searchIcon}>
           <SearchIcon />
@@ -181,12 +194,18 @@ const AccountBlocky = () => {
   const network = useWeb3Network();
   const [account] = useWeb3Addresses();
   const classes = useNetworkStyle({ chain });
-  const setStoredAddress = useWeb3SetStoredAddress();
-  const resetStoredAddress = useWeb3ResetStoredAddress();
   const error = useRef("");
   const [connectAccount, setConnectAccount] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const setError = (e: any) => {
+    if (e) {
+      error.current = e;
+      setErrorOpen(true)
+    } else {
+      setErrorOpen(false)
+    }
+  }
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     if (account) {
       setAnchorEl(event.currentTarget);
@@ -199,18 +218,6 @@ const AccountBlocky = () => {
   };
   const handleCloseAccount = () => {
     setConnectAccount(false);
-  };
-  const handleSetStoredAddress = (value: string) => {
-    setStoredAddress(value);
-  };
-  const handleConnectEthereum = () => {
-    enableEthereum()
-      .then(() => web3.eth.getAccounts())
-      .then(([address]) => resetStoredAddress(address))
-      .catch((e: any) => {
-        error.current = e.message;
-        setErrorOpen(true);
-      });
   };
   const render = account ? (
     <Tooltip title={<Typography>{`Connected to ${network}`}</Typography>}>
@@ -256,8 +263,7 @@ const AccountBlocky = () => {
       <ConnectAccountDialog
         open={connectAccount}
         onClose={handleCloseAccount}
-        onConnect={handleConnectEthereum}
-        onSubmit={handleSetStoredAddress}
+        onError={setError}
       />
       <Snackbar
         open={errorOpen}
@@ -267,69 +273,6 @@ const AccountBlocky = () => {
         <Alert severity="error">{error.current}</Alert>
       </Snackbar>
     </>
-  );
-};
-
-const ConnectAccountDialog = ({
-  open,
-  onClose,
-  onConnect,
-  onSubmit,
-}: {
-  open: boolean;
-  onClose: (event: React.MouseEvent<HTMLElement>) => any;
-  onConnect: (event: React.MouseEvent<HTMLElement>) => any;
-  onSubmit: (value: string) => any;
-}) => {
-  const [value, setValue] = useState("");
-  const handleSubmit = (ev: any) => {
-    ev.preventDefault();
-    if (value) {
-      onSubmit(value);
-    }
-  };
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <CardHeader
-        title="Add Address or Connect Metamask"
-        action={
-          <IconButton onClick={onClose}>
-            <CloseIcon />
-          </IconButton>
-        }
-      />
-      <Divider />
-      <DialogContent>
-        <form onSubmit={handleSubmit}>
-          <Box mb={2}>
-            <TextField
-              label="Enter ETH Address"
-              value={value}
-              onChange={(ev) => setValue(ev.target.value)}
-              fullWidth
-              margin="normal"
-            />
-          </Box>
-          <Box mb={2}>
-            <Button fullWidth type="submit" variant="contained" color="primary">
-              Submit
-            </Button>
-          </Box>
-        </form>
-        {onConnect ? (
-          <Box mb={2}>
-            <Button
-              fullWidth
-              onClick={onConnect}
-              variant="contained"
-              color="secondary"
-            >
-              Connect With Metamask
-            </Button>
-          </Box>
-        ) : null}
-      </DialogContent>
-    </Dialog>
   );
 };
 
