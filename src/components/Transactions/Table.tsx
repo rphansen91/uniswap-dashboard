@@ -13,6 +13,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Paper from "@material-ui/core/Paper";
 import React from "react";
 import { useWeb3AddressTransactions, ITransaction } from "../../providers/Web3";
+import { n } from "../../utils/number";
 
 export const TransactionsTable = () => {
   const { data, loading, error } = useWeb3AddressTransactions();
@@ -79,7 +80,7 @@ const TransactionRow = ({ tx }: { tx: ITransaction }) => {
         </Box>
       </TableCell>
       <TableCell align="right">
-        <Typography>{tx.value} ETH</Typography>
+        <Typography>{n(Number(tx.value))} ETH</Typography>
       </TableCell>
     </TableRow>
   );

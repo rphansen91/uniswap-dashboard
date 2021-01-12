@@ -10,6 +10,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Paper from "@material-ui/core/Paper";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   isUniswapSymbol,
   IUniswapInfo,
@@ -23,6 +24,7 @@ import {
   usdBalance,
 } from "../../providers/Web3";
 import { AddressAvatar, TokenAvatar } from "../Avatar";
+import { n } from "../../utils/number";
 
 export const TokensList = ({ card }: { card?: boolean }) => {
   const { data, loading, error } = useWeb3AddressInfo();
@@ -52,19 +54,12 @@ export const TokensList = ({ card }: { card?: boolean }) => {
 };
 
 const TokenListItem = ({ token }: { token: IToken }) => {
-  const [from] = useWeb3Addresses();
-  const [pairInfo, setPairInfo] = useState<IUniswapInfo | null>(null);
-
-  useEffect(() => {
-    if (isUniswapSymbol(token.tokenInfo.symbol)) {
-      loadUniswapPairInfo(token.tokenInfo.address, from)
-        .then((info) => setPairInfo(info))
-        .catch((e) => console.error(`${token.tokenInfo.symbol} Error`, e));
-    }
-  }, [token, from]);
-
   return (
-    <ListItem button>
+    <ListItem
+      button
+      component={Link}
+      to={`/token/${token.tokenInfo.address.toLowerCase()}`}
+    >
       <ListItemAvatar>
         <Avatar
           src={`${
@@ -80,54 +75,57 @@ const TokenListItem = ({ token }: { token: IToken }) => {
         primaryTypographyProps={{ noWrap: true }}
         secondaryTypographyProps={{ noWrap: true }}
       />
-      <ListItemSecondaryAction>
-        {isUniswapSymbol(token.tokenInfo.symbol) ? (
-          pairInfo ? (
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="flex-end"
-              justifyContent="flex-end"
-            >
-              <Box
-                mb={1}
-                display="flex"
-                alignItems="center"
-                justifyContent="flex-end"
-              >
-                <Typography style={{ marginRight: 4 }}>
-                  {(
-                    (pairInfo.balance / pairInfo.totalSupply) *
-                    pairInfo.reserve0
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: 4,
-                    minimumFractionDigits: 4,
-                  })}
-                </Typography>
-                <TokenAvatar address={pairInfo.token0} />
-              </Box>
-              <Box display="flex" alignItems="center" justifyContent="flex-end">
-                <Typography style={{ marginRight: 4 }}>
-                  {(
-                    (pairInfo.balance / pairInfo.totalSupply) *
-                    pairInfo.reserve1
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: 4,
-                    minimumFractionDigits: 4,
-                  })}
-                </Typography>
-                <TokenAvatar address={pairInfo.token1} />
-              </Box>
-            </Box>
-          ) : null
-        ) : (
-          <Box textAlign="right">
-            <Typography>{weiBalance(token)}</Typography>
-            <Typography>{usdBalance(token)}</Typography>
-          </Box>
-        )}
-      </ListItemSecondaryAction>
+      <Box pl={1}>
+        <TokenListItemSecondaryAction token={token} />
+      </Box>
     </ListItem>
+  );
+};
+
+export const TokenListItemSecondaryAction = ({ token }: { token: IToken }) => {
+  const [from] = useWeb3Addresses();
+  const [pairInfo, setPairInfo] = useState<IUniswapInfo | null>(null);
+
+  useEffect(() => {
+    if (isUniswapSymbol(token.tokenInfo.symbol)) {
+      loadUniswapPairInfo(token.tokenInfo.address, from)
+        .then((info) => setPairInfo(info))
+        .catch((e) => console.error(`${token.tokenInfo.symbol} Error`, e));
+    }
+  }, [token, from]);
+
+  return isUniswapSymbol(token.tokenInfo.symbol) ? (
+    pairInfo ? (
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="flex-end"
+        justifyContent="flex-end"
+      >
+        <Box
+          mb={1}
+          display="flex"
+          alignItems="center"
+          justifyContent="flex-end"
+        >
+          <Typography style={{ marginRight: 4 }}>
+            {n((pairInfo.balance / pairInfo.totalSupply) * pairInfo.reserve0)}
+          </Typography>
+          <TokenAvatar address={pairInfo.token0} />
+        </Box>
+        <Box display="flex" alignItems="center" justifyContent="flex-end">
+          <Typography style={{ marginRight: 4 }}>
+            {n((pairInfo.balance / pairInfo.totalSupply) * pairInfo.reserve1)}
+          </Typography>
+          <TokenAvatar address={pairInfo.token1} />
+        </Box>
+      </Box>
+    ) : null
+  ) : (
+    <Box textAlign="right">
+      <Typography>{n(weiBalance(token))}</Typography>
+      <Typography>{usdBalance(token)}</Typography>
+    </Box>
   );
 };
 

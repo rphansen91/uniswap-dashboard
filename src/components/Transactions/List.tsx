@@ -13,6 +13,7 @@ import Paper from "@material-ui/core/Paper";
 import React from "react";
 import { ITransaction, useWeb3AddressTransactions } from "../../providers/Web3";
 import { AddressAvatar } from "../Avatar";
+import { n } from "../../utils/number";
 
 export const TransactionsList = ({ card }: { card?: boolean }) => {
   const { data, loading, error } = useWeb3AddressTransactions();
@@ -30,7 +31,7 @@ export const TransactionsList = ({ card }: { card?: boolean }) => {
     <>
       {loading ? (
         <LinearProgress />
-      ) : card ? (
+      ) : !data?.length ? null : card ? (
         <Box p={2} pb={5}>
           <Paper>{list}</Paper>
         </Box>
@@ -64,9 +65,9 @@ const TransactionListItem = ({ tx }: { tx: ITransaction }) => {
         primaryTypographyProps={{ noWrap: true }}
         secondaryTypographyProps={{ noWrap: true }}
       />
-      <ListItemSecondaryAction>
-        <Typography>{tx.value} ETH</Typography>
-      </ListItemSecondaryAction>
+      <Box pl={1}>
+        <Typography>{n(Number(tx.value))} ETH</Typography>
+      </Box>
     </ListItem>
   );
 };

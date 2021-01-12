@@ -1,0 +1,32 @@
+name: Develop
+
+on:
+  push:
+    branches:
+      - 'develop'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Install
+        run: |
+          npm run install
+      - name: Test
+        run: |
+          npm run test
+      - name: Build
+        run: |
+          npm run build
+      - name: Deploy Preview
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          expires: 7d
+          projectId: energi-73c76

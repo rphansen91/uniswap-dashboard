@@ -3,6 +3,7 @@ import { Line } from "react-chartjs-2";
 import { MainLayout } from "../../components/Layout/Main";
 import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
+import Divider from "@material-ui/core/Divider";
 import Card from "@material-ui/core/Card";
 import { UniswapApolloProvider } from "../../providers/Uniswap/client";
 import { useQuery } from "@apollo/client";
@@ -10,7 +11,6 @@ import { liquidityPositionHistory } from "../../providers/Uniswap/gql/liquidityP
 import { liquidityPositionSnapshots } from "../../providers/Uniswap/gql/liquidityPositionSnapshots";
 import { useWeb3Addresses } from "../../providers/Web3";
 import CardContent from "@material-ui/core/CardContent";
-import Divider from "@material-ui/core/Divider";
 import { lighten, useTheme } from "@material-ui/core/styles";
 import CardHeader from "@material-ui/core/CardHeader";
 import { AddressAvatar, TokenAvatar } from "../../components/Avatar";
@@ -22,6 +22,7 @@ import { pairsDocument } from "../../providers/Uniswap/gql/pairs";
 import Button from "@material-ui/core/Button";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import { DefaultColorCard } from "../../components/Cards";
+import { MainNavBar } from "../../components/Navbar";
 
 // Impermanent Loss Chart
 // Initial Liquidity Position (name, timestamp, liquidityTokens, liquidityTokenTotalSupply, reserves0, reserves1)
@@ -30,17 +31,13 @@ import { DefaultColorCard } from "../../components/Cards";
 
 export const Uniswap = () => {
   return (
-    <MainLayout>
-      <UniswapApolloProvider>
-        <Box px={3} pb={5}>
-          <Grid container>
-            <Grid item xs={12}>
-              <UniswapLiquidityProviderHistory />
-            </Grid>
-          </Grid>
-        </Box>
-      </UniswapApolloProvider>
-    </MainLayout>
+    <UniswapApolloProvider>
+      <MainNavBar>
+        <Typography variant="h4">Liquidity</Typography>
+      </MainNavBar>
+      <Divider />
+      <UniswapLiquidityProviderHistory />
+    </UniswapApolloProvider>
   );
 };
 

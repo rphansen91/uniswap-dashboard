@@ -22,6 +22,7 @@ import {
   IToken,
   useWeb3Addresses,
 } from "../../providers/Web3";
+import { n } from "../../utils/number";
 
 export const TokensTable = () => {
   const { data, loading, error } = useWeb3AddressInfo();
@@ -100,17 +101,11 @@ const TokenRow = ({ token }: { token: IToken }) => {
           pairInfo ? (
             <Box display="flex" flexDirection="column" alignItems="flex-end" justifyContent="flex-end">
               <Box mb={1} display="flex" alignItems="center" justifyContent="flex-end">
-                <Typography style={{ marginRight: 4 }}>{(pairInfo.balance / pairInfo.totalSupply * pairInfo.reserve0).toLocaleString(undefined, {
-                  maximumFractionDigits: 4,
-                  minimumFractionDigits: 4
-                })}</Typography>
+                <Typography style={{ marginRight: 4 }}>{n(pairInfo.balance / pairInfo.totalSupply * pairInfo.reserve0)}</Typography>
                 <TokenAvatar address={pairInfo.token0} />
               </Box>
               <Box display="flex" alignItems="center" justifyContent="flex-end">
-                <Typography style={{ marginRight: 4 }}>{(pairInfo.balance / pairInfo.totalSupply * pairInfo.reserve1).toLocaleString(undefined, {
-                  maximumFractionDigits: 4,
-                  minimumFractionDigits: 4
-                })}</Typography>
+                <Typography style={{ marginRight: 4 }}>{n(pairInfo.balance / pairInfo.totalSupply * pairInfo.reserve1)}</Typography>
                 <TokenAvatar address={pairInfo.token1} />
               </Box>
             </Box>

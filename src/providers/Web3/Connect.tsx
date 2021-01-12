@@ -7,47 +7,52 @@ import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import TextField from "@material-ui/core/TextField";
 import CloseIcon from "@material-ui/icons/Close";
-import React, { useState } from "react";
+import React, {
+  useState,
+  createContext,
+  useContext,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import {
   web3,
   enableEthereum,
   useWeb3SetStoredAddress,
 } from "../../providers/Web3";
+import { useToastContext } from "../../components/Toast";
 
-export const ConnectAccountDialog = ({
-  open,
-  onClose,
-  onError,
-}: {
-  open: boolean;
-  onClose: () => any;
-  onError: (error: string) => any;
-}) => {
+export const ConnectAccountDialogContext = createContext<
+  null | [boolean, Dispatch<SetStateAction<boolean>>]
+>(null);
+export const useConnectAccountDialogContext = () => {
+  const ctx = useContext(ConnectAccountDialogContext);
+  if (!ctx) throw new Error(`ConnectAccountDialogProvider not found in tree`);
+  return ctx;
+};
+
+export const ConnectAccountDialog = () => {
+  const [open, setOpen] = useConnectAccountDialogContext()
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
       <CardHeader
         title="Add Address or Connect Metamask"
         action={
-          <IconButton onClick={onClose}>
+          <IconButton onClick={() => setOpen(false)}>
             <CloseIcon />
           </IconButton>
         }
       />
       <Divider />
       <DialogContent>
-        <ConnectAccount onClose={onClose} onError={onError} />
+        <ConnectAccount />
       </DialogContent>
     </Dialog>
   );
 };
 
-export const ConnectAccount = ({
-    onClose,
-    onError,
-  }: {
-    onClose?: () => any;
-    onError?: (error: string) => any;
-  }) => {
+export const ConnectAccount = () => {
+  const setOpen = useConnectAccountDialogContext()[1]
+  const { setAlert } = useToastContext()
   const setStoredAddress = useWeb3SetStoredAddress();
   const [value, setValue] = useState("");
   const handleSubmit = (ev: any) => {
@@ -60,8 +65,11 @@ export const ConnectAccount = ({
     enableEthereum()
       .then(() => web3.eth.getAccounts())
       .then(([address]) => setStoredAddress(address))
-      .then(() => onClose?.())
-      .catch((e: any) => onError?.(e.message));
+      .then(() => setOpen?.(false))
+      .catch((e: any) => {
+        console.error('Handle', e)
+        setAlert({ severity: 'error', content: e.message })
+      });
   };
   return (
     <>

@@ -17,8 +17,14 @@ export const AddressAvatar = ({
   return <JazzIcon seed={seed} {...props} />;
 };
 
-export const TokenAvatar = ({ address, size = 24 }: { address: string; size?: number }) => {
-  if (!address) return null
+export const TokenAvatar = ({
+  address,
+  size = 24,
+}: {
+  address: string;
+  size?: number;
+}) => {
+  if (!address) return null;
   return (
     <Avatar
       style={{ height: size, width: size }}
@@ -30,4 +36,3 @@ export const TokenAvatar = ({ address, size = 24 }: { address: string; size?: nu
     </Avatar>
   );
 };
-

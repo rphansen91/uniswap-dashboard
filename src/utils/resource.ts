@@ -7,6 +7,22 @@ export function resource<A, V>(fetchResource: (args: A) => Promise<V>) {
     results = {}
     promises = {}
   }
+  function useResource (args: A) {
+    const argStr = JSON.stringify(args)
+    if (errors[argStr]) throw errors[argStr]
+    if (results[argStr]) return results[argStr]
+    if (promises[argStr]) throw promises[argStr]
+    promises[argStr] = fetchResource(args)
+    .then(v => {
+      results[argStr] = v
+      return v
+    })
+    .catch(e => {
+      errors[argStr] = e
+      throw e
+    })
+    throw promises[argStr]
+  }
   async function load (args: A) {
     const argStr = JSON.stringify(args)
     if (errors[argStr]) throw errors[argStr]
@@ -24,6 +40,7 @@ export function resource<A, V>(fetchResource: (args: A) => Promise<V>) {
     return promises[argStr]
   }
   return {
+    useResource,
     reset,
     load
   }

@@ -194,9 +194,15 @@ export function getNetworkColor(chain: string) {
 }
 
 export const fetchAddressInfoResource = resource(fetchAddressInfo)
+export const fetchTokenInfoResource = resource(fetchTokenInfo)
 export const fetchAddressTransactionsResource = resource(fetchAddressTransactions)
 
 export async function fetchAddressInfo (address: string): Promise<IAddressInfo> {
+  return fetch(`https://api.ethplorer.io/getAddressInfo/${address}?apiKey=EK-96NbS-9bixWLY-9CJQ3`)
+  .then(res => res.json())
+}
+
+export async function fetchTokenInfo (address: string): Promise<IToken> {
   return fetch(`https://api.ethplorer.io/getAddressInfo/${address}?apiKey=EK-96NbS-9bixWLY-9CJQ3`)
   .then(res => res.json())
 }
@@ -250,6 +256,7 @@ export type IToken = {
     totalSupply: string;
     owner: string;
     lastUpdated: number;
+    image: string;
     issuancesCount: number;
     holdersCount: number;
     description: string;

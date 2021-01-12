@@ -7,9 +7,14 @@ import MomentUtils from "@date-io/moment";
 import { ThemeProvider } from "./themes";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import './providers/Web3'
+import "./providers/Web3";
 import "./index.css";
-import { estimateBlocksTilNextMasternodeRewards, getBalances, mapValues } from "./providers/Energi/api";
+import {
+  estimateBlocksTilNextMasternodeRewards,
+  getBalances,
+  mapValues,
+} from "./providers/Energi/api";
+import { ToastProvider } from "./components/Toast";
 
 const address = "0x6ca67362d28eeb8d1d845d26daad1db5a598d82a";
 
@@ -27,10 +32,12 @@ ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider>
       <MuiPickersUtilsProvider utils={MomentUtils}>
-        <CssBaseline />
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <ToastProvider>
+          <CssBaseline />
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ToastProvider>
       </MuiPickersUtilsProvider>
     </ThemeProvider>
   </React.StrictMode>,

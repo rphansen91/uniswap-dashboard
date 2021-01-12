@@ -3,8 +3,9 @@ import { Route, Switch } from "react-router-dom";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { MainLayout } from "./components/Layout/Main";
 
-const Home = lazy(() => import("./routes/Home"));
 const About = lazy(() => import("./routes/About"));
+const Tokens = lazy(() => import("./routes/Tokens"));
+const Transactions = lazy(() => import("./routes/Transactions"));
 const Uniswap = lazy(() => import("./routes/Uniswap"));
 
 function App() {
@@ -13,7 +14,9 @@ function App() {
       <Suspense fallback={<LinearProgress />}>
         <Switch>
           <Route path="/about" component={About} />
-          <Route path="/" component={Home} />
+          <Route path="/uniswap" component={Uniswap} />
+          <Route path="/tx" component={Transactions} />
+          <Route path="/" component={Tokens} />
         </Switch>
       </Suspense>
     </MainLayout>
