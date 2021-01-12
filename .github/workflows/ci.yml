@@ -16,7 +16,7 @@ jobs:
           node-version: 12
       - name: Install
         run: |
-          npm run install
+          npm install
       - name: Test
         run: |
           npm run test
